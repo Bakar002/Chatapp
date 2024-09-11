@@ -183,7 +183,7 @@ export default function Chat() {
   return (
     <>
       <ParticlesBackground />
-      <div className="flex h-screen ">
+      <div className="flex h-auto ">
         <div className="w-1/3 flex flex-col user-field">
           <div className="flex-grow ">
             <Logo />
