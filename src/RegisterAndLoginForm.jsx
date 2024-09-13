@@ -6,9 +6,9 @@ import "../style.css";
 export default function Register() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [image, setImage] = useState(null); // State to manage the image file
+  const [profileImage, setProfileImage] = useState(null); // State to manage the image file
   const [isLoggedInOrRegister, setIsLoggedInOrRegister] = useState("register");
-  const { setUserName: setLogedInUsername, setId } = useContext(UserContext);
+  const { setUserName: setLogedInUsername, setId, setProfileImage:setImage } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +36,8 @@ export default function Register() {
             alert("Login successful");
             setLogedInUsername(username);
             setId(response.data.id);
-            
+            setImage(response.data.profileImage);
+
           } else if (response.status === 201) {
             alert("Registration successful");
           } else {
@@ -53,7 +54,8 @@ export default function Register() {
           setLogedInUsername(username);
           setId(response.data.id);
           console.log(response.data)
-          // setImage()
+          setImage(response.data.profileImage);
+
         } else {
           alert("Unexpected response status: " + response.status);
         }
