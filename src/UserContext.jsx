@@ -25,11 +25,14 @@ export function UserContextProvider({ children }) {
             Authorization: `Bearer ${token}`,
           },
         });
-
+console.log(response.data);
         // Assuming your backend response contains the profile image URL.
         setId(response.data.userId);
         setUserName(response.data.username);
+
         setProfileImage(response.data.profileImage); // Set the profile image here
+
+
       } catch (err) {
         console.error("Error fetching user profile:", err);
         setError(err);

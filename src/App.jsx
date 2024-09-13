@@ -2,8 +2,9 @@ import axios from "axios";
 import { UserContextProvider } from "./UserContext";
 import Routes from "./Routes";
 
+
 function App() {
-  axios.defaults.baseURL = "http://localhost:8001";
+  axios.defaults.baseURL = "https://chatappback-9eg8.onrender.com";
   axios.defaults.withCredentials = true;
   return (
     <>

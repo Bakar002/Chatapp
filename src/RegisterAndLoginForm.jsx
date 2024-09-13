@@ -27,7 +27,7 @@ export default function Register() {
           const payload = {
             username,
             password,
-            image: imageData, // Include the image data only during registration
+            profileImage: imageData, // Include the image data only during registration
           };
 
           const response = await axios.post(url, payload);
@@ -36,6 +36,7 @@ export default function Register() {
             alert("Login successful");
             setLogedInUsername(username);
             setId(response.data.id);
+            
           } else if (response.status === 201) {
             alert("Registration successful");
           } else {
@@ -51,6 +52,8 @@ export default function Register() {
           alert("Login successful");
           setLogedInUsername(username);
           setId(response.data.id);
+          console.log(response.data)
+          // setImage()
         } else {
           alert("Unexpected response status: " + response.status);
         }
