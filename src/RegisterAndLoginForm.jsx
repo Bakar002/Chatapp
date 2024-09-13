@@ -6,75 +6,59 @@ import "../style.css";
 export default function Register() {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [profileImage, setProfileImage] = useState(null); // State to manage the image file
+  const [image, setImage] = useState(null); // State to manage the image file
+
   const [isLoggedInOrRegister, setIsLoggedInOrRegister] = useState("register");
-  const { setUserName: setLogedInUsername, setId, setProfileImage:setImage } = useContext(UserContext);
+  const { setUserName: setLogedInUsername, setId, setImage:setProfileImage } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const url = isLoggedInOrRegister === "register" ? "/register" : "/login";
-      // Convert the image to a base64 string if registering
-      let imageData = null;
-      if (isLoggedInOrRegister === "register" && image) {
-        const reader = new FileReader();
-        reader.readAsDataURL(image);
-        reader.onloadend = async () => {
-          imageData = reader.result; // Base64 string of the image
-
-          // Request payload
-          const payload = {
-            username,
-            password,
-            profileImage: imageData, // Include the image data only during registration
-          };
-
-          const response = await axios.post(url, payload);
-
-          if (response.status === 200) {
-            alert("Login successful");
-            setLogedInUsername(username);
-            setId(response.data.id);
-            setImage(response.data.userProfile);
-
-          } else if (response.status === 201) {
-            alert("Registration successful");
-          } else {
-            alert("Unexpected response status: " + response.status);
-          }
-        };
-      } else {
-        // For login, just send username and password without image
-        const payload = { username, password };
-        const response = await axios.post(url, payload);
-
-        if (response.status === 200) {
-          alert("Login successful");
-          setLogedInUsername(username);
-          setId(response.data.id);
-          console.log(response.data)
-          setImage(response.data.userProfile);
-
-        } else {
-          alert("Unexpected response status: " + response.status);
+      
+      let response;
+  
+      if (isLoggedInOrRegister === "register") {
+        // Use FormData when registering (for image upload)
+        const formData = new FormData();
+        formData.append("username", username);
+        formData.append("password", password);
+        if (image) {
+          formData.append("profileImage", image);
         }
+        
+        response = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        // Use JSON for login
+        response = await axios.post(url, {
+          username,
+          password,
+        });
+      }
+  
+      // Handle response
+      if (response.status === 200 || response.status === 201) {
+        alert(isLoggedInOrRegister === "register" ? "Registration successful" : "Login successful");
+        setLogedInUsername(username);
+        setId(response.data.id || null); // Ensure ID exists in the response
+        setProfileImage(response.data.userProfile || null); // Handle profile image in response
+      } else {
+        alert("Unexpected response status: " + response.status);
       }
     } catch (error) {
-      if (error.response) {
-        if (error.response.status === 401) {
-          alert("Invalid username or password");
-        } else {
-          alert("Server error: " + error.response.data.error);
-        }
-      } else if (error.request) {
-        alert("Request error: " + error.request.message);
+      if (error.response && error.response.status === 401) {
+        alert("Invalid username or password");
       } else {
         alert("Error: " + error.message);
       }
     }
   };
-
+  
   const handleLoginClick = () => {
     setIsLoggedInOrRegister("login");
   };

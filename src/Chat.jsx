@@ -18,17 +18,42 @@ export default function Chat() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [newMessageText, setNewMessageText] = useState("");
   const [messages, setMessages] = useState([]);
-  const { username, id, profileImage, setId, setUserName } =useContext(UserContext);
+  const { username, id, image, setId, setUserName } =useContext(UserContext);
   const divUnderMessages = useRef();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [newProfileImage, setNewProfileImage] = useState(null); // New image state
 
+
+
+  // Handle opening modal
+  const openModal = () => setIsModalOpen(true);
+  
+  // Handle closing modal
+  const closeModal = () => setIsModalOpen(false);
+
+  // Handle file selection for updating profile image
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewProfileImage(URL.createObjectURL(file)); // Preview selected image
+    }
+  };
+
+  // Handle profile image update
+  const updateProfileImage = () => {
+    if (newProfileImage) {
+      console.log(newProfileImage)
+      // setProfileImage(newProfileImage);
+      closeModal(); // Close modal after updating
+    }
+  };
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   useEffect(() => {
     connectToWs();
-    console.log(profileImage);
+
   }, [selectedUserId]);
 
   function connectToWs() {
@@ -215,6 +240,48 @@ export default function Chat() {
 
   return (
     <>
+    {/* Profile Image Modal */}
+    {isModalOpen && (
+      <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+        <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm w-full">
+          <h2 className="text-lg font-bold mb-4">Update Profile Image</h2>
+
+          {/* Current or new image preview */}
+          <div className="mb-4">
+            <img
+              src={newProfileImage || image}
+              alt="Profile Preview"
+              className="w-32 h-32 object-cover rounded-full mx-auto"
+            />
+          </div>
+
+          {/* File input to select new image */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mb-4"
+          />
+
+          {/* Update and Cancel buttons */}
+          <div className="flex justify-between">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={updateProfileImage}
+            >
+              Update
+            </button>
+            <button
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+              onClick={closeModal}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
     <ParticlesBackground />
     <div className="relative flex h-screen">
       {/* Hamburger Icon for small screens */}
@@ -232,11 +299,14 @@ export default function Chat() {
         } sm:translate-x-0 transition-transform duration-300 ease-in-out sm:w-1/3 w-full fixed sm:static h-full z-40`}
       >
         <div className="p-2 flex items-center justify-between bg-[#291f3d]">
-          <span className="flex items-center gap-2 text-lg font-bold text-white">
+          <span
+            className="flex items-center gap-2 text-lg font-bold text-white"
+            onClick={openModal} // Open modal on click
+          >
             <img
-              src={profileImage || "default-profile.png"}
+              src={image}
               alt="Profile"
-              className="w-16 h-16 rounded-full object-contain"
+              className="w-16 h-16 rounded-full object-contain cursor-pointer"
             />
             {username}
           </span>
@@ -344,22 +414,14 @@ export default function Chat() {
               type="button"
               className="bg-gray-200 p-2 text-gray-600 rounded-sm cursor-pointer"
             >
-              <input
-                type="file"
-                className="hidden"
-                onChange={sendFile}
-              />
+              <input type="file" className="hidden" onChange={sendFile} />
               <FaFile />
             </label>
             <label
               type="button"
               className="bg-gray-200 p-2 text-gray-600 rounded-sm cursor-pointer"
             >
-              <input
-                type="file"
-                className="hidden"
-                onChange={sendFile}
-              />
+              <input type="file" className="hidden" onChange={sendFile} />
               <AiOutlinePicture />
             </label>
             <button

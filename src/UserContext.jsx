@@ -6,7 +6,8 @@ export const UserContext = createContext({});
 export function UserContextProvider({ children }) {
   const [username, setUserName] = useState(null);
   const [id, setId] = useState(null);
-  const [profileImage, setProfileImage] = useState(null); // New state for profile image
+  const [image, setImage] = useState(null); // State to manage the image file
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -30,7 +31,7 @@ console.log(response.data);
         setId(response.data.userId);
         setUserName(response.data.username);
 
-        setProfileImage(response.data.profileImage); // Set the profile image here
+        setImage(response.data.profileImage); // Set the profile image here
 
 
       } catch (err) {
@@ -54,7 +55,7 @@ console.log(response.data);
 
   return (
     <UserContext.Provider
-      value={{ username, setUserName, id, setId, profileImage, setProfileImage }}
+      value={{ username, setUserName, id, setId, image, setImage }}
     >
       {children}
     </UserContext.Provider>
