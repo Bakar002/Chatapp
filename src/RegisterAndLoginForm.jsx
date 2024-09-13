@@ -36,7 +36,7 @@ export default function Register() {
             alert("Login successful");
             setLogedInUsername(username);
             setId(response.data.id);
-            setImage(response.data.profileImage);
+            setImage(response.data.userProfile);
 
           } else if (response.status === 201) {
             alert("Registration successful");
@@ -54,7 +54,7 @@ export default function Register() {
           setLogedInUsername(username);
           setId(response.data.id);
           console.log(response.data)
-          setImage(response.data.profileImage);
+          setImage(response.data.userProfile);
 
         } else {
           alert("Unexpected response status: " + response.status);

@@ -1,6 +1,6 @@
 import Avatar from "./Avatar.jsx";
 
-export default function Contact({ id, username, onClick, selected, online }) {
+export default function Contact({ id, username, onClick, selected, online,profileImage }) {
   return (
     <div
       key={id}
@@ -12,7 +12,7 @@ export default function Contact({ id, username, onClick, selected, online }) {
     >
       {selected && <div className="w-1 bg-[#2e1e3f] h-12 rounded-r-md"></div>}
       <div className="flex gap-2 py-2 pl-4 items-center">
-        <Avatar online={online} username={username} userId={id} />
+        <Avatar online={online} username={username} userId={id} profileImage={profileImage} />
         <span className="text-white">{username}</span>
       </div>
     </div>
