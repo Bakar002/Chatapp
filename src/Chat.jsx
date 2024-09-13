@@ -208,136 +208,163 @@ export default function Chat() {
 
   return (
     <>
-      <ParticlesBackground />
-      <div className="flex h-auto">
-        <div className="w-1/3 flex flex-col user-field">
-          <div className="p-2 flex items-center justify-between bg-[#291f3d]">
-            <span className="flex items-center gap-2 text-sm text-white">
-              <img
-                src={profileImage || "default-profile.png"}
-                alt="Profile"
-                className="w-8 h-8 rounded-full object-cover"
-              />
-              {username}
-            </span>
-            <button
-              onClick={logout}
-              className="text-sm bg-blue-100 py-1 px-2 text-gray-600 border rounded-sm"
-            >
-              Logout
-            </button>
-          </div>
+  <ParticlesBackground />
 
-          <div className="flex-grow">
-            <Logo />
-            {Object.keys(onlinePeopleExclOurUser).map((userId) => (
-              <Contact
-                key={userId}
-                id={userId}
-                online={true}
-                username={onlinePeopleExclOurUser[userId]}
-                onClick={() => setSelectedUserId(userId)}
-                selected={userId === selectedUserId}
-              />
-            ))}
-            {Object.keys(offlinePeople).map((userId) => (
-              <Contact
-                key={userId}
-                id={userId}
-                online={false}
-                username={offlinePeople[userId].username}
-                onClick={() => setSelectedUserId(userId)}
-                selected={userId === selectedUserId}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex flex-col w-2/3 p-2 chat-field">
-          <div className="flex-grow">
-            {!selectedUserId && (
-              <div className="flex h-full items-center justify-center">
-                <div className="text-gray-400">
-                  &larr; Select a person from the sidebar
-                </div>
-              </div>
-            )}
-            {!!selectedUserId && (
-              <div className="relative h-full">
-                <div className="overflow-y-scroll absolute top-0 left-0 right-0 bottom-2">
-                  {messagesWithoutDupes.map((message) => (
-                    <div
-                      key={message._id}
-                      className={`${
-                        message.sender === id ? "text-right" : "text-left"
-                      }`}
-                    >
-                      <div
-                        className={`text-left inline-block p-2 my-2 rounded-md text-sm ${
-                          message.sender === id
-                            ? "bg-[#9e81ff] text-white"
-                            : "bg-white text-gray-500"
-                        }`}
-                      >
-                        {message.text}
-                        {message.file && (
-                          <a
-                            href={message.file}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline block border-b"
-                          >
-                            {message.file.name}
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={divUnderMessages}></div>
-                </div>
-              </div>
-            )}
-          </div>
-          {!!selectedUserId && (
-            <form className="flex gap-2 p-2" onSubmit={sendMessage}>
-              <input
-                type="text"
-                value={newMessageText}
-                onChange={(ev) => setNewMessageText(ev.target.value)}
-                placeholder="Type your message here"
-                className="bg-white border p-2 flex-grow rounded-sm text-black"
-              />
-              <label
-                type="button"
-                className="bg-gray-200 p-2 text-gray-600 rounded-sm cursor-pointer"
-              >
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={sendFile}
-                />
-                <FaFile />
-              </label>
-              <label
-                type="button"
-                className="bg-gray-200 p-2 text-gray-600 rounded-sm cursor-pointer"
-              >
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={sendFile}
-                />
-                <AiOutlinePicture />
-              </label>
-              <button
-                type="submit"
-                className="bg-[#7464cf] p-2 text-white rounded-sm"
-              >
-                <IoIosSend />
-              </button>
-            </form>
-          )}
-        </div>
+  {/* Hamburger Menu for Small Screens */}
+  <div className="sm:hidden flex justify-between p-2 bg-[#291f3d]">
+    <button
+      onClick={() => setSidebarOpen(!sidebarOpen)}
+      className="text-white"
+    >
+      {sidebarOpen ? "Close" : "Menu"}
+    </button>
+    <span className="flex items-center gap-2 text-sm text-white">
+      <img
+        src={profileImage || "default-profile.png"}
+        alt="Profile"
+        className="w-8 h-8 rounded-full object-cover"
+      />
+      {username}
+    </span>
+    <button
+      onClick={logout}
+      className="text-sm bg-blue-100 py-1 px-2 text-gray-600 border rounded-sm"
+    >
+      Logout
+    </button>
+  </div>
+
+  <div className="flex h-auto">
+    {/* Sidebar */}
+    <div
+      className={`w-1/3 flex-col user-field bg-[#291f3d] sm:flex ${
+        sidebarOpen ? "flex" : "hidden"
+      } sm:w-1/4 md:w-1/3`}
+    >
+      <div className="p-2 flex items-center justify-between bg-[#291f3d] sm:hidden">
+        <span className="flex items-center gap-2 text-sm text-white">
+          <img
+            src={profileImage || "default-profile.png"}
+            alt="Profile"
+            className="w-8 h-8 rounded-full object-cover"
+          />
+          {username}
+        </span>
       </div>
-    </>
+
+      <div className="flex-grow">
+        <Logo />
+        {Object.keys(onlinePeopleExclOurUser).map((userId) => (
+          <Contact
+            key={userId}
+            id={userId}
+            online={true}
+            username={onlinePeopleExclOurUser[userId]}
+            onClick={() => setSelectedUserId(userId)}
+            selected={userId === selectedUserId}
+          />
+        ))}
+        {Object.keys(offlinePeople).map((userId) => (
+          <Contact
+            key={userId}
+            id={userId}
+            online={false}
+            username={offlinePeople[userId].username}
+            onClick={() => setSelectedUserId(userId)}
+            selected={userId === selectedUserId}
+          />
+        ))}
+      </div>
+    </div>
+
+    {/* Chat Section */}
+    <div className="flex flex-col w-full sm:w-3/4 md:w-2/3 p-2 chat-field">
+      <div className="flex-grow">
+        {!selectedUserId && (
+          <div className="flex h-full items-center justify-center">
+            <div className="text-gray-400">
+              &larr; Select a person from the sidebar
+            </div>
+          </div>
+        )}
+        {!!selectedUserId && (
+          <div className="relative h-full">
+            <div className="overflow-y-scroll absolute top-0 left-0 right-0 bottom-2">
+              {messagesWithoutDupes.map((message) => (
+                <div
+                  key={message._id}
+                  className={`${
+                    message.sender === id ? "text-right" : "text-left"
+                  }`}
+                >
+                  <div
+                    className={`text-left inline-block p-2 my-2 rounded-md text-sm ${
+                      message.sender === id
+                        ? "bg-[#9e81ff] text-white"
+                        : "bg-white text-gray-500"
+                    }`}
+                  >
+                    {message.text}
+                    {message.file && (
+                      <a
+                        href={message.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline block border-b"
+                      >
+                        {message.file.name}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <div ref={divUnderMessages}></div>
+            </div>
+          </div>
+        )}
+      </div>
+      {!!selectedUserId && (
+        <form className="flex gap-2 p-2" onSubmit={sendMessage}>
+          <input
+            type="text"
+            value={newMessageText}
+            onChange={(ev) => setNewMessageText(ev.target.value)}
+            placeholder="Type your message here"
+            className="bg-white border p-2 flex-grow rounded-sm text-black"
+          />
+          <label
+            type="button"
+            className="bg-gray-200 p-2 text-gray-600 rounded-sm cursor-pointer"
+          >
+            <input
+              type="file"
+              className="hidden"
+              onChange={sendFile}
+            />
+            <FaFile />
+          </label>
+          <label
+            type="button"
+            className="bg-gray-200 p-2 text-gray-600 rounded-sm cursor-pointer"
+          >
+            <input
+              type="file"
+              className="hidden"
+              onChange={sendFile}
+            />
+            <AiOutlinePicture />
+          </label>
+          <button
+            type="submit"
+            className="bg-[#7464cf] p-2 text-white rounded-sm"
+          >
+            <IoIosSend />
+          </button>
+        </form>
+      )}
+    </div>
+  </div>
+</>
+
   );
 }
