@@ -108,25 +108,44 @@ export default function Register() {
             </div>
   
             {isLoggedInOrRegister === "register" && (
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Email
-                </label>
-                <div className="mt-2">
-                  <input
-                    value={email}
-                    onChange={(ev) => setEmail(ev.target.value)}
-                    type="text"
-                    placeholder="Email"
-                    required
-                    className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-            )}
+  <div>
+    <label
+      htmlFor="email"
+      className="block text-sm font-medium leading-6 text-gray-900"
+    >
+      Email
+    </label>
+    <div className="mt-2">
+      <input
+        value={email}
+        onChange={(ev) => {
+          const emailValue = ev.target.value;
+          // Regular expression to allow only Gmail addresses
+          const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+          // List of restricted words
+          const restrictedWords = ['gandu', 'phudi', 'lun','gand'];
+
+          // Check if the email is valid Gmail and doesn't include restricted words
+          const containsRestrictedWords = restrictedWords.some((word) =>
+            emailValue.includes(word)
+          );
+
+          if (gmailRegex.test(emailValue) && !containsRestrictedWords) {
+            setEmail(emailValue);
+          } else {
+            console.error("Invalid email: Must be a Gmail ");
+            setEmail(''); // Clear the email if invalid
+          }
+        }}
+        type="text"
+        placeholder="Email"
+        required
+        className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      />
+    </div>
+  </div>
+)}
+
   
             <div>
               <label
