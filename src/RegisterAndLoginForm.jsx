@@ -3,44 +3,72 @@ import axios from "axios";
 import { UserContext } from "./UserContext";
 import "../style.css";
 import { toast, ToastContainer } from "react-toastify";
-import { TailSpin } from 'react-loader-spinner';
+import { TailSpin } from "react-loader-spinner";
 
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast  
+
 export default function Register() {
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
   const [image, setImage] = useState(null); // State to manage the image file
   const [isLoading, setIsLoading] = useState(false);
-
   const [isLoggedInOrRegister, setIsLoggedInOrRegister] = useState("register");
-  const { setUserName: setLogedInUsername, setId, setImage:setProfileImage } = useContext(UserContext);
+  const { setUserName: setLogedInUsername, setId, setImage: setProfileImage } = useContext(UserContext);
+
+  // Restricted words array
+  const restrictedWords = ["admin", "test", "password", "123"];
+
+  // Function to validate Gmail email addresses
+  const isValidGmail = (email) => {
+    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    return gmailRegex.test(email);
+  };
+
+  // Function to check for restricted words in username or password
+  const containsRestrictedWords = (text) => {
+    return restrictedWords.some((word) => text.toLowerCase().includes(word));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true); // Set loading state to true when the form is submitted
- 
+
+    // Validation checks
+    if (isLoggedInOrRegister === "register") {
+      if (!isValidGmail(email)) {
+        toast.error("Only Gmail addresses are allowed.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (containsRestrictedWords(username) || containsRestrictedWords(password)) {
+        toast.error("Username or password contains restricted words.");
+        setIsLoading(false);
+        return;
+      }
+    }
+
     try {
       const url = isLoggedInOrRegister === "register" ? "/register" : "/login";
       let response;
- 
+
       if (isLoggedInOrRegister === "register") {
         const formData = new FormData();
         formData.append("username", username);
         formData.append("password", password);
         formData.append("email", email);
- 
+
         if (image) {
           formData.append("profileImage", image);
         }
- 
+
         response = await axios.post(url, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
- 
+
         if (response.status === 200 || response.status === 201) {
           toast.info("Please verify your email to complete registration.");
           setIsLoggedInOrRegister("login"); // Switch to login form
@@ -49,7 +77,7 @@ export default function Register() {
         }
       } else {
         response = await axios.post(url, { username, password });
- 
+
         if (response.status === 200 || response.status === 201) {
           toast.success("Login successful");
           setLogedInUsername(username);
@@ -70,7 +98,7 @@ export default function Register() {
       setIsLoading(false); // Reset loading state after submission is done
     }
   };
- 
+
   const handleLoginClick = () => {
     setIsLoggedInOrRegister("login");
   };
@@ -106,47 +134,28 @@ export default function Register() {
                 />
               </div>
             </div>
-  
+
             {isLoggedInOrRegister === "register" && (
-  <div>
-    <label
-      htmlFor="email"
-      className="block text-sm font-medium leading-6 text-gray-900"
-    >
-      Email
-    </label>
-    <div className="mt-2">
-      <input
-        value={email}
-        onChange={(ev) => {
-          const emailValue = ev.target.value;
-          // Regular expression to allow only Gmail addresses
-          const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-          // List of restricted words
-          const restrictedWords = ['gandu', 'phudi', 'lun','gand'];
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Email
+                </label>
+                <div className="mt-2">
+                  <input
+                    value={email}
+                    onChange={(ev) => setEmail(ev.target.value)}
+                    type="text"
+                    placeholder="Email"
+                    required
+                    className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+            )}
 
-          // Check if the email is valid Gmail and doesn't include restricted words
-          const containsRestrictedWords = restrictedWords.some((word) =>
-            emailValue.includes(word)
-          );
-
-          if (gmailRegex.test(emailValue) && !containsRestrictedWords) {
-            setEmail(emailValue);
-          } else {
-            console.error("Invalid email: Must be a Gmail ");
-            setEmail(''); // Clear the email if invalid
-          }
-        }}
-        type="text"
-        placeholder="Email"
-        required
-        className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-      />
-    </div>
-  </div>
-)}
-
-  
             <div>
               <label
                 htmlFor="password"
@@ -165,7 +174,7 @@ export default function Register() {
                 />
               </div>
             </div>
-  
+
             {isLoggedInOrRegister === "register" && (
               <div>
                 <label
@@ -184,7 +193,7 @@ export default function Register() {
                 </div>
               </div>
             )}
-  
+
             <div>
               {isLoading ? (
                 <div className="flex justify-center">
@@ -204,7 +213,7 @@ export default function Register() {
                 </button>
               )}
             </div>
-  
+
             <div className="text-center mt-3">
               {isLoggedInOrRegister === "register" && (
                 <div>
@@ -225,6 +234,4 @@ export default function Register() {
       </div>
     </div>
   );
-  
-
 }
