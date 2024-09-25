@@ -4,7 +4,7 @@ import Routes from "./Routes";
 
 
 function App() {
-  axios.defaults.baseURL = "https://chatappback-9eg8.onrender.com";
+  axios.defaults.baseURL = "";
   axios.defaults.withCredentials = true;
   return (
     <>
